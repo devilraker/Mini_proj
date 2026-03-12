@@ -1,0 +1,28 @@
+body {
+    background-color: #13191A;
+    text-align: center;
+}
+
+p {
+    color: #3FC8A8;
+    font-family: Shanti;
+    font-size: 3.2em;
+    margin: 20px;
+}
+
+.main-img {
+    width: 500px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.slider {
+    -webkit-appearance: none; /* styling */
+    width: 400px;             /* length */
+    height: 12px;             /* thickness */
+    background: greenyellow;
+    border-radius: 10px;
+    outline: none;
+}
+

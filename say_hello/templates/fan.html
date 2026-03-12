@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Fan Control</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+        <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    </head>
+    <body>
+        <img src="{{ url_for('static', filename='images/imggg.png') }}" class="main-img" alt="Image">
+        
+        <div class="container">
+            <a href="/" class="back-button">← BACK</a>
+            
+            <h1>FAN CONTROL</h1>
+            <p class="control-title">SPEED</p>
+            
+            <div class="speed-display">
+                <span id="speedValue">50</span>%
+            </div>
+            
+            <div class="control-buttons">
+                <div class="button-container">
+                    <button class="speed-button decrease-button" onclick="decreaseSpeed()">
+                        <span class="button-symbol">−</span>
+                        <span class="button-label">DECREASE</span>
+                    </button>
+                    <div class="gesture-number">Gesture: 4</div>
+                </div>
+                
+                <div class="button-container">
+                    <button class="speed-button increase-button" onclick="increaseSpeed()">
+                        <span class="button-symbol">+</span>
+                        <span class="button-label">INCREASE</span>
+                    </button>
+                    <div class="gesture-number">Gesture: 5</div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            // Load saved speed from localStorage or default to 50
+            let speed = parseInt(localStorage.getItem('fanSpeed')) || 50;
+            
+            // Update display on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                updateSpeed();
+            });
+            
+            function increaseSpeed() {
+                if (speed < 100) {
+                    speed += 10;
+                    updateSpeed();
+                    saveSpeed();
+                }
+            }
+            
+            function decreaseSpeed() {
+                if (speed > 0) {
+                    speed -= 10;
+                    updateSpeed();
+                    saveSpeed();
+                }
+            }
+            
+            function updateSpeed() {
+                document.getElementById('speedValue').textContent = speed;
+            }
+            
+            function saveSpeed() {
+                localStorage.setItem('fanSpeed', speed);
+            }
+            
+            // Socket.IO gesture control
+            const socket = io();
+            
+            socket.on('gesture_detected', function(data) {
+                // Navigation gestures (work on all pages)
+                if (data.action === 'fan') {
+                    window.location.href = '/fan';
+                } else if (data.action === 'light') {
+                    window.location.href = '/light';
+                } else if (data.action === 'bed') {
+                    window.location.href = '/bed';
+                }
+                // Control gestures (increase/decrease)
+                else if (data.action === 'increase') {
+                    increaseSpeed();
+                } else if (data.action === 'decrease') {
+                    decreaseSpeed();
+                }
+            });
+        </script>
+    </body>
+</html>

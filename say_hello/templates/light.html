@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Light Control</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+        <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    </head>
+    <body>
+        <img src="{{ url_for('static', filename='images/imggg.png') }}" class="main-img" alt="Image">
+        
+        <div class="container">
+            <a href="/" class="back-button">← BACK</a>
+            
+            <h1>LIGHT CONTROL</h1>
+            <p class="control-title">BRIGHTNESS</p>
+            
+            <div class="speed-display">
+                <span id="brightnessValue">50</span>%
+            </div>
+            
+            <div class="control-buttons">
+                <div class="button-container">
+                    <button class="speed-button decrease-button" onclick="decreaseBrightness()">
+                        <span class="button-symbol">−</span>
+                        <span class="button-label">DECREASE</span>
+                    </button>
+                    <div class="gesture-number">Gesture: 4</div>
+                </div>
+                
+                <div class="button-container">
+                    <button class="speed-button increase-button" onclick="increaseBrightness()">
+                        <span class="button-symbol">+</span>
+                        <span class="button-label">INCREASE</span>
+                    </button>
+                    <div class="gesture-number">Gesture: 5</div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            // Load saved brightness from localStorage or default to 50
+            let brightness = parseInt(localStorage.getItem('lightBrightness')) || 50;
+            
+            // Update display on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                updateBrightness();
+            });
+            
+            function increaseBrightness() {
+                if (brightness < 100) {
+                    brightness += 10;
+                    updateBrightness();
+                    saveBrightness();
+                }
+            }
+            
+            function decreaseBrightness() {
+                if (brightness > 0) {
+                    brightness -= 10;
+                    updateBrightness();
+                    saveBrightness();
+                }
+            }
+            
+            function updateBrightness() {
+                document.getElementById('brightnessValue').textContent = brightness;
+            }
+            
+            function saveBrightness() {
+                localStorage.setItem('lightBrightness', brightness);
+            }
+            
+            // Socket.IO gesture control
+            const socket = io();
+            
+            socket.on('gesture_detected', function(data) {
+                // Navigation gestures (work on all pages)
+                if (data.action === 'fan') {
+                    window.location.href = '/fan';
+                } else if (data.action === 'light') {
+                    window.location.href = '/light';
+                } else if (data.action === 'bed') {
+                    window.location.href = '/bed';
+                }
+                // Control gestures (increase/decrease)
+                else if (data.action === 'increase') {
+                    increaseBrightness();
+                } else if (data.action === 'decrease') {
+                    decreaseBrightness();
+                }
+            });
+        </script>
+    </body>
+</html>

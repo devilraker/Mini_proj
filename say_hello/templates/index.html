@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Smart Room Control</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+        <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    </head>
+    <body>
+        <img src="{{ url_for('static', filename='images/imggg.png') }}" class="main-img" alt="Image">
+        
+        <div class="container">
+            <h1>Smart Room Control</h1>
+            
+            <div class="button-grid">
+                <div class="button-container">
+                    <a href="/fan" class="control-button fan-button">
+                        <div class="button-icon">🌀</div>
+                        <div class="button-text">FAN</div>
+                    </a>
+                    <div class="gesture-number">Gesture: 1</div>
+                </div>
+                
+                <div class="button-container">
+                    <a href="/light" class="control-button light-button">
+                        <div class="button-icon">💡</div>
+                        <div class="button-text">LIGHT</div>
+                    </a>
+                    <div class="gesture-number">Gesture: 2</div>
+                </div>
+                
+                <div class="button-container">
+                    <a href="/bed" class="control-button bed-button">
+                        <div class="button-icon">🛏️</div>
+                        <div class="button-text">BED ANGLE</div>
+                    </a>
+                    <div class="gesture-number">Gesture: 3</div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            const socket = io();
+            
+            socket.on('gesture_detected', function(data) {
+                console.log('Gesture detected:', data.action);
+                
+                // Navigate based on gesture
+                if (data.action === 'fan') {
+                    window.location.href = '/fan';
+                } else if (data.action === 'light') {
+                    window.location.href = '/light';
+                } else if (data.action === 'bed') {
+                    window.location.href = '/bed';
+                }
+            });
+        </script>
+    </body>
+</html>

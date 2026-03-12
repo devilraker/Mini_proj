@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Bed Angle Control</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+        <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    </head>
+    <body>
+        <img src="{{ url_for('static', filename='images/imggg.png') }}" class="main-img" alt="Image">
+        
+        <div class="container">
+            <a href="/" class="back-button">← BACK</a>
+            
+            <h1>BED ANGLE CONTROL</h1>
+            <p class="control-title">ANGLE</p>
+            
+            <div class="speed-display">
+                <span id="angleValue">50</span>°
+            </div>
+            
+            <div class="control-buttons">
+                <div class="button-container">
+                    <button class="speed-button decrease-button" onclick="decreaseAngle()">
+                        <span class="button-symbol">−</span>
+                        <span class="button-label">DECREASE</span>
+                    </button>
+                    <div class="gesture-number">Gesture: 4</div>
+                </div>
+                
+                <div class="button-container">
+                    <button class="speed-button increase-button" onclick="increaseAngle()">
+                        <span class="button-symbol">+</span>
+                        <span class="button-label">INCREASE</span>
+                    </button>
+                    <div class="gesture-number">Gesture: 5</div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            // Load saved angle from localStorage or default to 50
+            let angle = parseInt(localStorage.getItem('bedAngle')) || 50;
+            
+            // Update display on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                updateAngle();
+            });
+            
+            function increaseAngle() {
+                if (angle < 100) {
+                    angle += 10;
+                    updateAngle();
+                    saveAngle();
+                }
+            }
+            
+            function decreaseAngle() {
+                if (angle > 0) {
+                    angle -= 10;
+                    updateAngle();
+                    saveAngle();
+                }
+            }
+            
+            function updateAngle() {
+                document.getElementById('angleValue').textContent = angle;
+            }
+            
+            function saveAngle() {
+                localStorage.setItem('bedAngle', angle);
+            }
+            
+            // Socket.IO gesture control
+            const socket = io();
+            
+            socket.on('gesture_detected', function(data) {
+                // Navigation gestures (work on all pages)
+                if (data.action === 'fan') {
+                    window.location.href = '/fan';
+                } else if (data.action === 'light') {
+                    window.location.href = '/light';
+                } else if (data.action === 'bed') {
+                    window.location.href = '/bed';
+                }
+                // Control gestures (increase/decrease)
+                else if (data.action === 'increase') {
+                    increaseAngle();
+                } else if (data.action === 'decrease') {
+                    decreaseAngle();
+                }
+            });
+        </script>
+    </body>
+</html>
